@@ -1,4 +1,5 @@
 import type { LinksFunction } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -9,27 +10,42 @@ import {
 } from '@remix-run/react';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { useState } from 'react';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
-import { lightTheme, darkTheme } from './styles/theme';
+import { ThemeSwitcher } from '~/components/ThemeSwitcher';
+import { lightTheme, darkTheme } from '~/styles/theme';
+import { getUserFromSession } from '~/services/auth.server';
 
-export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: styles },
-];
+// Import styles
+import styles from '~/styles/global.scss?url';
 
-// export async function loader({ request }: { request: Request }) {
-//   const user = await getUserFromSession(request);
-//   const pathname = new URL(request.url).pathname;
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'stylesheet',
+      href: styles
+    }
+  ];
+};
+
+export async function loader({ request }: { request: Request }) {
+  const user = await getUserFromSession(request);
+  const pathname = new URL(request.url).pathname;
   
-//   if (user && pathname === "/login") {
-//     return redirect("/");
-//   }
+  // Skip auth check for public routes if you have any
+  const publicRoutes = ['/login', '/register'];
+  if (publicRoutes.includes(pathname)) {
+    if (user) {
+      return redirect('/');
+    }
+    return json({ user: null });
+  }
   
-//   if (!user && pathname !== "/login") {
-//     return redirect("/login");
-//   }
+  // Protected routes
+  if (!user) {
+    return redirect('/login');
+  }
   
-//   return json({ user });
-// }
+  return json({ user });
+}
 
 export default function App() {
   const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('light');
