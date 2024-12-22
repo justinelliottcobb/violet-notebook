@@ -1,0 +1,99 @@
+@mixin light-theme {
+  --vn-bg-primary: #ffffff;
+  --vn-bg-secondary: var(--vn-violet-50);
+  --vn-bg-tertiary: var(--vn-violet-100);
+  --vn-text-primary: var(--vn-gray-900);
+  --vn-text-secondary: var(--vn-gray-700);
+  --vn-border-color: var(--vn-gray-200);
+}
+
+@mixin dark-theme {
+  --vn-bg-primary: var(--vn-gray-900);
+  --vn-bg-secondary: var(--vn-gray-800);
+  --vn-bg-tertiary: var(--vn-gray-700);
+  --vn-text-primary: var(--vn-gray-100);
+  --vn-text-secondary: var(--vn-gray-300);
+  --vn-border-color: var(--vn-gray-700);
+}
+
+:root {
+  // Primary colors
+  --vn-violet-50: #{violetColors.violet[0]};
+  --vn-violet-100: #{violetColors.violet[1]};
+  --vn-violet-200: #{violetColors.violet[2]};
+  --vn-violet-300: #{violetColors.violet[3]};
+  --vn-violet-400: #{violetColors.violet[4]};
+  --vn-violet-500: #{violetColors.violet[5]};
+  --vn-violet-600: #{violetColors.violet[6]};
+  --vn-violet-700: #{violetColors.violet[7]};
+  --vn-violet-800: #{violetColors.violet[8]};
+  --vn-violet-900: #{violetColors.violet[9]};
+
+  // Semantic colors
+  --vn-primary: var(--vn-violet-600);
+  --vn-primary-light: var(--vn-violet-400);
+  --vn-primary-dark: var(--vn-violet-800);
+  
+  // Background colors
+  --vn-bg-primary: #ffffff;
+  --vn-bg-secondary: var(--vn-violet-50);
+  --vn-bg-tertiary: var(--vn-violet-100);
+  
+  // Text colors
+  --vn-text-primary: #{violetColors.gray[9]};
+  --vn-text-secondary: #{violetColors.gray[7]};
+  --vn-text-tertiary: #{violetColors.gray[6]};
+  
+  // Component specific
+  --vn-sidebar-bg: var(--vn-bg-secondary);
+  --vn-header-bg: var(--vn-bg-primary);
+  --vn-card-bg: var(--vn-bg-primary);
+  
+  // Misc
+  --vn-border-color: #{violetColors.gray[3]};
+  --vn-shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --vn-shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --vn-shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+
+  @include light-theme;
+}
+
+[data-mantine-color-scheme="dark"] {
+  @include dark-theme;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--vn-bg-primary);
+  color: var(--vn-text-primary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.editor {
+  [data-mantine-color-scheme="dark"] & {
+    .ql-toolbar {
+      background-color: var(--vn-bg-secondary);
+      border-color: var(--vn-border-color);
+    }
+    
+    .ql-container {
+      background-color: var(--vn-bg-primary);
+      border-color: var(--vn-border-color);
+    }
+    
+    .ql-stroke {
+      stroke: var(--vn-text-secondary);
+    }
+    
+    .ql-fill {
+      fill: var(--vn-text-secondary);
+    }
+  }
+}

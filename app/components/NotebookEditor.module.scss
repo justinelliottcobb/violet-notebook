@@ -1,0 +1,42 @@
+.editor {
+  background-color: var(--vn-bg-primary);
+  border-radius: 8px;
+  box-shadow: var(--vn-shadow-md);
+  margin: 1rem 0;
+  
+  :global {
+    .ql-toolbar {
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      border-color: var(--vn-border-color);
+      background-color: var(--vn-bg-secondary);
+    }
+    
+    .ql-container {
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      border-color: var(--vn-border-color);
+      
+      .ql-editor {
+        min-height: 200px;
+        
+        &:focus {
+          outline: 2px solid var(--vn-primary);
+          outline-offset: -2px;
+        }
+      }
+    }
+    
+    .ql-stroke {
+      stroke: var(--vn-text-secondary);
+    }
+    
+    .ql-fill {
+      fill: var(--vn-text-secondary);
+    }
+    
+    .ql-picker {
+      color: var(--vn-text-secondary);
+    }
+  }
+}

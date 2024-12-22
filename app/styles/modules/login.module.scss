@@ -1,0 +1,27 @@
+.loginContainer {
+  background: linear-gradient(135deg, var(--vn-violet-100) 0%, var(--vn-bg-primary) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loginForm {
+  background: var(--vn-bg-primary);
+  box-shadow: var(--vn-shadow-lg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  
+  h2 {
+    color: var(--vn-text-primary);
+    margin-bottom: 2rem;
+  }
+}
+
+.error {
+  color: #e53935;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
