@@ -1,40 +1,37 @@
-import { json, redirect } from "@remix-run/node";
+// app/routes/register.tsx
+import type { ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-import { createUserSession } from "../services/auth.server";
 import { TextInput, PasswordInput, Button, Paper, Title } from '@mantine/core';
-import { login } from '~/services/auth.server';
+import { createUser } from "~/models/user.server";
+import { login } from "~/services/auth.server";
 import styles from '~/styles/modules/login.module.scss';
 
-
-export async function action({ request }: { request: Request }) {
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  const session = await login(email, password);
-  if (!session) {
-    return json({ error: "Invalid credentials" });
+  try {
+    const user = await createUser(email, password);
+    if (user) {
+      const session = await login(email, password);
+      return session;
+    }
+    return json({ error: "Registration failed" });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return json({ error: "Registration failed" });
   }
+};
 
-  return session;
-
-  // Old hardcoded login
-  // Add your user validation logic here
-  // This is where you'd typically check against your database
-  // if (email === "admin@example.com" && password === "password") {
-  //   return createUserSession("1", "/");
-  // }
-
-  // return json({ error: "Invalid credentials" });
-}
-
-export default function Login() {
+export default function Register() {
   const actionData = useActionData<typeof action>();
 
   return (
     <div className={styles.loginContainer}>
       <Paper shadow="md" p="xl" className={styles.loginForm}>
-        <Title order={2} mb="lg">Login to Violet Notebook</Title>
+        <Title order={2} mb="lg">Register</Title>
         <Form method="post">
           <TextInput
             name="email"
@@ -52,7 +49,7 @@ export default function Login() {
             <div className={styles.error}>{actionData.error}</div>
           )}
           <Button type="submit" fullWidth>
-            Log in
+            Register
           </Button>
         </Form>
       </Paper>
