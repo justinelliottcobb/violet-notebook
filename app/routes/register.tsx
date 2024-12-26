@@ -55,4 +55,8 @@ export default function Register() {
       </Paper>
     </div>
   );
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

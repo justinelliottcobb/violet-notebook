@@ -18,4 +18,8 @@ export async function initDB() {
     console.error('DB Connection Error:', error);
     throw error;
   }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
