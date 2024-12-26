@@ -1,6 +1,7 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyLogin } from '~/models/user.server';
 
 const sessionSecret = process.env.SESSION_SECRET || "default-secret-change-me";
 
@@ -48,6 +49,14 @@ export async function requireAuth(request: Request) {
     throw redirect("/login");
   }
   return userId;
+}
+
+export async function login(email: string, password: string) {
+  const user = await verifyLogin(email, password);
+  if (!user) return null;
+  
+  const session = await createUserSession(user.id!, "/");
+  return session;
 }
 
 export async function logout(request: Request) {
