@@ -9,18 +9,6 @@ export interface Article {
   updatedAt: string;
 }
 
-// export async function createArticle(title: string, content: string, authorId: string) {
-//   const db = await initDB();
-//   const result = await db.create('article', {
-//     title,
-//     content,
-//     authorId,
-//     createdAt: new Date().toISOString(),
-//     updatedAt: new Date().toISOString()
-//   });
-//   return result[0];
-// }
-
 export async function createArticle(title: string, content: string, authorId: string) {
   const db = await initDB();
   console.log('Creating article:', { title, content, authorId });
@@ -40,12 +28,6 @@ export async function getArticles() {
   return result[0];
 }
 
-// export async function getArticle(id: string) {
-//   const db = await initDB();
-//   const result = await db.query('SELECT * FROM article WHERE id = type::thing("article", $id)', { id });
-//   return result[0][0];
-// }
-
 export async function getArticleByTitle(title: string) {
   const db = await initDB();
   console.log('Searching for article with title:', title);
@@ -63,3 +45,25 @@ export async function getArticle(id: string) {
   const result = await db.query('SELECT * FROM article WHERE id = type::thing("article", $id)', { id });
   return result[0][0];
 }
+
+export async function updateArticle(title: string, data: Partial<Article>) {
+  const db = await initDB();
+  const result = await db.query(
+    'UPDATE article SET title = $newTitle, content = $content, updatedAt = $updatedAt WHERE string::lowercase(title) = string::lowercase($title)',
+    { 
+      title, // original title for matching
+      newTitle: data.title,
+      content: data.content,
+      updatedAt: new Date().toISOString()
+    }
+  );
+  return result[0][0];
+}
+ 
+export async function deleteArticle(title: string) {
+  const db = await initDB();
+  await db.query(
+    'DELETE FROM article WHERE string::lowercase(title) = string::lowercase($title)', 
+    { title }
+  );
+ }

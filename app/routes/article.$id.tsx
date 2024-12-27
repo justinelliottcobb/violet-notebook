@@ -1,5 +1,5 @@
 import { json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, Link } from '@remix-run/react';
 import { getArticleByTitle } from '~/models/article.server';
 import { requireAuth } from '~/services/auth.server';
 import { MarkdownDisplay } from '~/components/MarkdownDisplay';
@@ -29,7 +29,15 @@ export default function Article() {
   
   return (
     <div className="container">
-      <h1>{article.title}</h1>
+      <div className="flex justify-between items-center">
+        <h1>{article.title}</h1>
+        <Link 
+          to={`/article/${encodeURIComponent(article.title.toLowerCase().replace(/\s+/g, '-'))}/edit`} 
+          className="button"
+        >
+          Edit
+        </Link>
+      </div>
       <MarkdownDisplay content={article.content} />
     </div>
   );
