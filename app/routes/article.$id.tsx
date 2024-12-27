@@ -12,7 +12,7 @@ export async function loader({ request, params }: { request: Request; params: { 
   console.log('Found article:', article);
 
   if (!article) {
-    const createUrl = `/articles/new?title=${encodeURIComponent(title)}`;
+    const createUrl = `/articles/new?title=${encodeURIComponent(title)}&fromWiki=true`;
     return json({ 
       article: { 
         title, 

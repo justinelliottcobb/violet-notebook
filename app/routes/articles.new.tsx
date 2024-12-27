@@ -8,7 +8,8 @@ export async function loader({ request }: { request: Request }) {
   await requireAuth(request);
   const url = new URL(request.url);
   const title = url.searchParams.get('title');
-  return json({ title: title ? decodeURIComponent(title) : '' });
+  const fromWikiLink = url.searchParams.get('fromWiki') === 'true';
+  return json({ title: title ? decodeURIComponent(title) : '', fromWikiLink });
 }
 
 export async function action({ request }: { request: Request }) {
@@ -22,7 +23,7 @@ export async function action({ request }: { request: Request }) {
 }
 
 export default function NewArticle() {
-  const { title } = useLoaderData<typeof loader>();
+  const { title, fromWikiLink } = useLoaderData<typeof loader>();
 
   return (
     <div className="container">
@@ -34,13 +35,11 @@ export default function NewArticle() {
           placeholder="Title"
           className="w-full p-2 mb-4 border rounded"
           required
-          value={title}
-          readOnly={!!title}
+          defaultValue={title}
+          readOnly={fromWikiLink}
         />
         <MarkdownEditorWrapper />
-        <button type="submit" className="px-4 py-2 mt-4 text-white bg-violet-600 rounded">
-          Save Article
-        </button>
+        <button type="submit">Save Article</button>
       </Form>
     </div>
   );
