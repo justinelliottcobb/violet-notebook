@@ -1,23 +1,19 @@
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
 import { Sun, Moon } from 'lucide-react';
+import styles from './ThemeSwitcher.module.scss';
 
 export function ThemeSwitcher() {
-  const { setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+ const { setColorScheme } = useMantineColorScheme();
+ const computedColorScheme = useComputedColorScheme('light');
 
-  return (
-    <ActionIcon
-      onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
-      variant="outline"
-      size="lg"
-      aria-label="Toggle color scheme"
-      className="fixed top-4 right-4"
-    >
-      {computedColorScheme === 'light' ? (
-        <Moon className="w-4 h-4" />
-      ) : (
-        <Sun className="w-4 h-4" />
-      )}
-    </ActionIcon>
-  );
+ return (
+   <ActionIcon
+     onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
+     variant="outline"
+     size="lg"
+     className={styles.themeButton}
+   >
+     {computedColorScheme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+   </ActionIcon>
+ );
 }
