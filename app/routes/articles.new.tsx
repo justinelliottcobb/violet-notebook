@@ -1,13 +1,14 @@
 import { json, redirect } from '@remix-run/node';
-import { Form } from '@remix-run/react';
+import { Form, useLoaderData } from '@remix-run/react';
 import { createArticle } from '~/models/article.server';
 import { requireAuth } from '~/services/auth.server';
-import { NotebookEditorWrapper } from '~/components/NotebookEditorWrapper';
+import { MarkdownEditorWrapper } from '~/components/MarkdownEditorWrapper';
 
 export async function loader({ request }: { request: Request }) {
-  console.log("New Article route loader called");
   await requireAuth(request);
-  return json({});
+  const url = new URL(request.url);
+  const title = url.searchParams.get('title');
+  return json({ title: title ? decodeURIComponent(title) : '' });
 }
 
 export async function action({ request }: { request: Request }) {
@@ -21,6 +22,8 @@ export async function action({ request }: { request: Request }) {
 }
 
 export default function NewArticle() {
+  const { title } = useLoaderData<typeof loader>();
+
   return (
     <div className="container">
       <h1>New Article</h1>
@@ -31,8 +34,10 @@ export default function NewArticle() {
           placeholder="Title"
           className="w-full p-2 mb-4 border rounded"
           required
+          value={title}
+          readOnly={!!title}
         />
-        <NotebookEditorWrapper />
+        <MarkdownEditorWrapper />
         <button type="submit" className="px-4 py-2 mt-4 text-white bg-violet-600 rounded">
           Save Article
         </button>
