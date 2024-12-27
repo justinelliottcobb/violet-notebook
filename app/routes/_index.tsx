@@ -1,5 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
-import { NotebookEditor } from '../components/NotebookEditor';
+import { NotebookEditorWrapper } from '~/components/NotebookEditorWrapper';
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,7 +12,7 @@ export default function Index() {
   return (
     <div className="container">
       <h1>Welcome to Violet Notebook</h1>
-      <NotebookEditor />
+      <NotebookEditorWrapper />
     </div>
   );
 }

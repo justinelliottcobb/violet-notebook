@@ -1,0 +1,22 @@
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  padding: 0 0 0 15px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: var(--vn-bg-primary);
+  border-right: 1px solid var(--vn-border-color);
+ }
+ 
+ .navButton {
+  padding: var(--mantine-spacing-sm);
+  color: var(--vn-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+ 
+  &:hover {
+    background-color: var(--vn-bg-secondary);
+  }
+ }

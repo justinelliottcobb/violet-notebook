@@ -1,20 +1,20 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useMantineColorScheme } from '@mantine/core';
 import styles from './NotebookEditor.module.scss';
 
 export function NotebookEditor() {
-  const { colorScheme } = useMantineColorScheme();
-  const handleChange = useCallback((content: string) => {
-    // Handle content changes
-    console.log(content);
+  const [content, setContent] = useState('');
+
+  const handleChange = useCallback((value: string) => {
+    setContent(value);
   }, []);
 
   return (
-    <div className={styles.editor} data-color-scheme={colorScheme}>
+    <div className={styles.editor}>
       <ReactQuill
         theme="snow"
+        value={content}
         onChange={handleChange}
         modules={{
           toolbar: [
@@ -27,6 +27,7 @@ export function NotebookEditor() {
           ]
         }}
       />
+      <input type="hidden" name="content" value={content} />
     </div>
   );
 }
