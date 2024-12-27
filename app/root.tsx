@@ -11,6 +11,7 @@ import {
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { useState } from 'react';
 import { ThemeSwitcher } from '~/components/ThemeSwitcher';
+import { Sidebar } from '~/components/Sidebar';
 import { lightTheme, darkTheme } from '~/styles/theme';
 import { getUserFromSession } from '~/services/auth.server';
 
@@ -62,8 +63,13 @@ export default function App() {
           theme={colorScheme === 'light' ? lightTheme : darkTheme}
           colorScheme={colorScheme}
         >
-          <ThemeSwitcher />
-          <Outlet />
+          <div className="flex">
+            <Sidebar />
+            <main className="ml-64 flex-1 min-h-screen">
+              <ThemeSwitcher />
+              <Outlet />
+            </main>
+          </div>
           <ScrollRestoration />
           <Scripts />
           <LiveReload />
