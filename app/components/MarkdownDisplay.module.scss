@@ -1,0 +1,91 @@
+.markdown {
+  color: var(--vn-text-primary);
+  line-height: 1.6;
+  
+  :global {
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+    }
+
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.5em; }
+    h3 { font-size: 1.25em; }
+
+    p {
+      margin: 1em 0;
+    }
+
+    a {
+      color: var(--vn-primary);
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &.wikilink {
+        color: var(--vn-primary-light);
+      }
+    }
+
+    code {
+      background: var(--vn-bg-secondary);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: var(--vn-bg-secondary);
+      padding: 1em;
+      border-radius: 4px;
+      overflow-x: auto;
+      
+      code {
+        background: none;
+        padding: 0;
+      }
+    }
+
+    blockquote {
+      border-left: 4px solid var(--vn-primary);
+      margin: 1em 0;
+      padding-left: 1em;
+      color: var(--vn-text-secondary);
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+      
+      th, td {
+        border: 1px solid var(--vn-border-color);
+        padding: 0.5em;
+      }
+      
+      th {
+        background: var(--vn-bg-secondary);
+      }
+    }
+
+    .wikilink {
+      color: var(--vn-primary);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--vn-primary);
+      
+      &:hover {
+        text-decoration: none;
+        border-bottom-style: solid;
+      }
+      
+      // Style for non-existent pages
+      &.new {
+        color: var(--vn-text-secondary);
+        border-bottom: 1px dashed var(--vn-text-secondary);
+      }
+    }
+  }
+}

@@ -14,18 +14,22 @@ export default function Articles() {
 
   return (
     <div className="container">
-    <h1>Articles List</h1>
-    <div className="grid gap-4">
-      {articles.map((article) => (
-        <Link to={`/article/${article.id.replace('article:', '')}`} key={article.id.replace('article:', '')} className="p-4 border rounded hover:bg-gray-50">
-          <h2>{article.title}</h2>
-          <p className="text-sm text-gray-500">
-            {new Date(article.createdAt).toLocaleDateString()}
-          </p>
-        </Link>
-      ))}
+      <h1>Articles List</h1>
+      <div className="grid gap-4">
+        {articles.map((article) => (
+          <Link 
+            to={`/article/${encodeURIComponent(article.title.toLowerCase().replace(/\s+/g, '-'))}`} 
+            key={article.id} 
+            className="p-4 border rounded hover:bg-gray-50"
+          >
+            <h2>{article.title}</h2>
+            <p className="text-sm text-gray-500">
+              {new Date(article.createdAt).toLocaleDateString()}
+            </p>
+          </Link>
+        ))}
+      </div>
     </div>
-  </div>
   );
 }
 
