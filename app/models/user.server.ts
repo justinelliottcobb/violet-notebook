@@ -13,17 +13,15 @@ export async function createUser(email: string, password: string) {
     const db = await initDB();
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    console.log('Creating user:', { email }); // Debug log
+    const result = await db.query(
+      'CREATE user SET email = $email, password = $password, createdAt = time::now()',
+      { 
+        email,
+        password: hashedPassword
+      }
+    );
     
-    const result = await db.create('user', {
-      email,
-      password: hashedPassword,
-      createdAt: new Date().toISOString()
-    });
-    
-    console.log('Create result:', result); // Debug log
-    return result[0];
-    
+    return result[0][0];
   } catch (error) {
     console.error('Create user error:', error);
     throw error;

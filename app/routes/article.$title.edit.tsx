@@ -7,8 +7,14 @@ import { MarkdownEditorWrapper } from '~/components/MarkdownEditorWrapper';
 export async function loader({ request, params }: { request: Request; params: { title: string } }) {
   await requireAuth(request);
   const title = decodeURIComponent(params.title).replace(/-/g, ' ');
+  console.log('Edit loader - looking for article:', title); // Debug
+
   const article = await getArticleByTitle(title);
-  if (!article) throw new Response("Not Found", { status: 404 });
+  console.log('Edit loader - found article:', article); // Debug
+
+  if (!article) {
+    throw new Response("Not Found", { status: 404 });
+  }
   return json({ article });
 }
 
@@ -17,7 +23,9 @@ export async function action({ request, params }: { request: Request; params: { 
   const formData = await request.formData();
   const intent = formData.get("intent");
   const originalTitle = decodeURIComponent(params.title).replace(/-/g, ' ');
- 
+
+  console.log('Edit action called:', { intent, originalTitle }); // Debug
+
   if (intent === "delete") {
     await deleteArticle(originalTitle);
     return redirect("/articlelist");
@@ -25,7 +33,14 @@ export async function action({ request, params }: { request: Request; params: { 
 
   const newTitle = formData.get("title") as string;
   const content = formData.get("content") as string;
-  await updateArticle(originalTitle, { title: newTitle, content });
+
+  console.log('Updating article:', { originalTitle, newTitle, content }); // Debug
+
+  await updateArticle(originalTitle, { 
+    title: newTitle, 
+    content 
+  }, userId);
+
   return redirect(`/article/${encodeURIComponent(newTitle.toLowerCase().replace(/\s+/g, '-'))}`);
 }
 

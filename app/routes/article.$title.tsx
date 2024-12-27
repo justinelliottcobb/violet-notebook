@@ -4,19 +4,20 @@ import { getArticleByTitle } from '~/models/article.server';
 import { requireAuth } from '~/services/auth.server';
 import { MarkdownDisplay } from '~/components/MarkdownDisplay';
 
-export async function loader({ request, params }: { request: Request; params: { id: string } }) {
+export async function loader({ request, params }: { request: Request; params: { title: string } }) {
   await requireAuth(request);
-  const title = decodeURIComponent(params.id).replace(/-/g, ' ');
-  console.log('Looking for article:', { originalId: params.id, decodedTitle: title });
+  const title = decodeURIComponent(params.title).replace(/-/g, ' ');
+  console.log('Loading article, received title:', title); // Debug log
+
   const article = await getArticleByTitle(title);
-  console.log('Found article:', article);
+  console.log('Retrieved article:', article); // Debug log
 
   if (!article) {
-    const createUrl = `/articles/new?title=${encodeURIComponent(title)}&fromWiki=true`;
+    console.log('No article found, returning create suggestion'); // Debug log
     return json({ 
       article: { 
         title, 
-        content: `This article doesn't exist yet. Would you like to [create it](${createUrl})?` 
+        content: `This article doesn't exist yet. Would you like to [create it](/articles/new)?` 
       } 
     });
   }
@@ -31,12 +32,10 @@ export default function Article() {
     <div className="container">
       <div className="flex justify-between items-center">
         <h1>{article.title}</h1>
-        <Link 
-          to={`/article/${encodeURIComponent(article.title.toLowerCase().replace(/\s+/g, '-'))}/edit`} 
-          className="button"
-        >
-          Edit
-        </Link>
+        <div className="space-x-4">
+          <Link to="revisions" className="button">History</Link>
+          <Link to="edit" className="button">Edit</Link>
+        </div>
       </div>
       <MarkdownDisplay content={article.content} />
     </div>
