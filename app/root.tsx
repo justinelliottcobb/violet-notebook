@@ -8,6 +8,8 @@ import { lightTheme, darkTheme } from '~/styles/theme';
 // Import styles
 import '~/styles/global.scss';
 
+// Test comment for pre-commit hook validation
+
 export default function App() {
   const [colorScheme] = useState<'light' | 'dark'>('light');
 
