@@ -34,10 +34,10 @@ export async function createArticle(title: string, content: string, authorId: st
   return result[0];
 }
 
-export async function getArticles() {
+export async function getArticles(): Promise<Article[]> {
   const db = await initDB();
   const result = await db.query('SELECT * FROM article ORDER BY createdAt DESC');
-  return result[0];
+  return result[0] as Article[];
 }
 
 // export async function getArticle(id: string) {
@@ -46,7 +46,7 @@ export async function getArticles() {
 //   return result[0][0];
 // }
 
-export async function getArticleByTitle(title: string) {
+export async function getArticleByTitle(title: string): Promise<Article | null> {
   const db = await initDB();
   console.log('Searching for article with title:', title);
   // Use string::lowercase() for case-insensitive comparison
@@ -55,11 +55,13 @@ export async function getArticleByTitle(title: string) {
     { title }
   );
   console.log('Query result:', result);
-  return result[0][0];
+  const article = (result as unknown[][])[0]?.[0];
+  return article as Article | null;
 }
 
-export async function getArticle(id: string) {
+export async function getArticle(id: string): Promise<Article | null> {
   const db = await initDB();
   const result = await db.query('SELECT * FROM article WHERE id = type::thing("article", $id)', { id });
-  return result[0][0];
+  const article = (result as unknown[][])[0]?.[0];
+  return article as Article | null;
 }

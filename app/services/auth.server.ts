@@ -1,3 +1,7 @@
+// Legacy server auth - replaced by auth.client.ts for React Router 7
+// This file is kept for reference but not used in the new implementation
+
+/*
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -67,3 +71,4 @@ export async function logout(request: Request) {
     },
   });
 }
+*/

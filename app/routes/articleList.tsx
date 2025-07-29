@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getArticles } from '~/models/article.server';
+import { getArticles, type Article } from '~/models/article.server';
 import { requireAuth } from '~/services/auth.client';
 
 export default function Articles() {
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

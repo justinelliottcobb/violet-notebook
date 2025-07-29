@@ -1,4 +1,4 @@
-import Surreal from "surrealdb";
+import { Surreal } from "surrealdb";
 
 const db = new Surreal();
 

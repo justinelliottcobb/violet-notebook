@@ -35,7 +35,7 @@ export async function verifyLogin(email: string, password: string) {
   console.log('Verifying login for:', { email });
 
   const result = await db.query('SELECT * FROM user WHERE email = $email LIMIT 1', { email });
-  const user = result[0][0]; // Access first element of first array
+  const user = (result as unknown[][])[0]?.[0] as User | undefined; // Access first element of first array
   
   if (!user || !user.password) {
     console.log('No user found or missing password');
