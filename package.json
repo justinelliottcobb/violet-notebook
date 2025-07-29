@@ -4,10 +4,10 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "remix vite:dev",
+    "build": "vite build",
+    "dev": "vite dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "remix-serve ./build/server/index.js",
+    "start": "node ./build/server/index.js",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -17,9 +17,8 @@
     "@emotion/react": "^11.14.0",
     "@mantine/core": "^7.15.1",
     "@mantine/hooks": "^7.15.1",
-    "@remix-run/node": "^2.15.2",
-    "@remix-run/react": "^2.15.2",
-    "@remix-run/serve": "^2.15.2",
+    "react-router": "^7.0.2",
+    "react-router-dom": "^7.0.2",
     "bcryptjs": "^2.4.3",
     "codemirror": "^6.0.1",
     "compression": "^1.7.5",
@@ -41,7 +40,7 @@
     "surrealdb": "^1.1.0"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.15.2",
+    "@vitejs/plugin-react": "^4.3.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",

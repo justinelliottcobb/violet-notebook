@@ -1,38 +1,47 @@
-// app/routes/register.tsx
-import type { ActionFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { useState } from 'react';
 import { TextInput, PasswordInput, Button, Paper, Title } from '@mantine/core';
 import { createUser } from "~/models/user.server";
-import { login } from "~/services/auth.server";
+import { login } from "~/services/auth.client";
 import styles from '~/styles/modules/login.module.scss';
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  try {
-    const user = await createUser(email, password);
-    if (user) {
-      const session = await login(email, password);
-      return session;
-    }
-    return json({ error: "Registration failed" });
-  } catch (error) {
-    console.error('Registration error:', error);
-    return json({ error: "Registration failed" });
-  }
-};
-
 export default function Register() {
-  const actionData = useActionData<typeof action>();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const user = await createUser(email, password);
+      if (user) {
+        const success = await login(email, password);
+        if (success) {
+          window.location.href = '/';
+        } else {
+          setError("Registration succeeded but login failed");
+        }
+      } else {
+        setError("Registration failed");
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError("Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className={styles.loginContainer}>
       <Paper shadow="md" p="xl" className={styles.loginForm}>
         <Title order={2} mb="lg">Register</Title>
-        <Form method="post">
+        <form onSubmit={handleSubmit}>
           <TextInput
             name="email"
             label="Email"
@@ -45,13 +54,13 @@ export default function Register() {
             required
             mb="md"
           />
-          {actionData?.error && (
-            <div className={styles.error}>{actionData.error}</div>
+          {error && (
+            <div className={styles.error}>{error}</div>
           )}
-          <Button type="submit" fullWidth>
+          <Button type="submit" fullWidth loading={isLoading}>
             Register
           </Button>
-        </Form>
+        </form>
       </Paper>
     </div>
   );

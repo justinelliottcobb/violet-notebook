@@ -1,6 +1,14 @@
-import { redirect } from "@remix-run/node";
-import { logout } from "~/services/auth.server";
+import { useEffect } from 'react';
+import { logout } from '~/services/auth.client';
 
-export async function loader({ request }: { request: Request }) {
-  return logout(request);
+export default function Logout() {
+  useEffect(() => {
+    logout();
+  }, []);
+
+  return (
+    <div>
+      <p>Logging out...</p>
+    </div>
+  );
 }
