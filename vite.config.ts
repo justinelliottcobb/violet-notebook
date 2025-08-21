@@ -13,5 +13,10 @@ export default defineConfig({
         api: 'modern-compiler'
       }
     }
+  },
+  server: {
+    host: '0.0.0.0', // Bind to all interfaces
+    port: 3000,      // Use unprivileged port
+    strictPort: true // Fail if port is occupied
   }
 });
