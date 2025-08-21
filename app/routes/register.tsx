@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { TextInput, PasswordInput, Button, Paper, Title } from '@mantine/core';
-import { createUser } from "~/models/user.server";
-import { login } from "~/services/auth.client";
+import { register } from "~/services/auth.client";
 import styles from '~/styles/modules/login.module.scss';
 
 export default function Register() {
@@ -18,14 +17,9 @@ export default function Register() {
     const password = formData.get("password") as string;
 
     try {
-      const user = await createUser(email, password);
-      if (user) {
-        const success = await login(email, password);
-        if (success) {
-          window.location.href = '/';
-        } else {
-          setError("Registration succeeded but login failed");
-        }
+      const success = await register(email, password);
+      if (success) {
+        window.location.href = '/';
       } else {
         setError("Registration failed");
       }
