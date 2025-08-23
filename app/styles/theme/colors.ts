@@ -10,7 +10,7 @@ export const violetColors = {
     '#6536e8',
     '#5426cc',
     '#4319ab'  // 9: Darkest violet
-  ],
+  ] as const,
   violetDark: [
     '#2a1f3d',
     '#352752',
@@ -22,7 +22,7 @@ export const violetColors = {
     '#8f77c7',
     '#ac9ad8',
     '#c9bde9'
-  ],
+  ] as const,
   gray: [
     '#f8f9fa',
     '#f1f3f5',
@@ -34,5 +34,5 @@ export const violetColors = {
     '#495057',
     '#343a40',
     '#212529',
-  ]
+  ] as const
 };

@@ -1,3 +1,7 @@
+// Legacy Remix server - not needed for React Router 7 with Vite
+// This file is kept for reference but not used in the new implementation
+
+/*
 // server/server.ts
 import express from 'express';
 import compression from 'compression';
@@ -20,100 +24,81 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
     directives: {
-      'default-src': ["'self'"],
-      'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      'style-src': ["'self'", "'unsafe-inline'"],
-      'img-src': ["'self'", 'data:', 'https:'],
-      'font-src': ["'self'", 'https:', 'data:'],
-      'connect-src': ["'self'", API_TARGET],
+      "connect-src": ["'self'", "ws:", "wss:", "https:"],
+      "img-src": ["'self'", "data:", "https:"],
+      "font-src": ["'self'", "https:", "data:"],
+      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      "style-src": ["'self'", "'unsafe-inline'", "https:"],
     },
   },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
 }));
 
-// Basic middleware setup
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://yourdomain.com'] 
+    : ['http://localhost:3000', 'http://localhost:5173'],
+  credentials: true
+}));
+
 app.use(compression());
-app.use(cors());
-app.use(morgan('tiny'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(morgan('combined'));
 
-// Static file serving
-app.use(express.static('public'));
+// Serve static files
+app.use(express.static('public', { maxAge: '1h' }));
 
-// API proxy configuration
+// Parse JSON bodies
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Proxy API requests
 const apiProxy = createProxyMiddleware({
   target: API_TARGET,
   changeOrigin: true,
   pathRewrite: {
-    '^/api': '', // Remove /api prefix when forwarding
-  },
-  onProxyReq: (proxyReq, req, res) => {
-    // Add any necessary headers or auth tokens
-    if (process.env.API_KEY) {
-      proxyReq.setHeader('Authorization', `Bearer ${process.env.API_KEY}`);
-    }
+    '^/api': '/api', // Keep the /api prefix
   },
   onError: (err, req, res) => {
-    console.error('Proxy Error:', err);
-    res.status(500).json({ error: 'Proxy Error' });
-  },
+    console.error('Proxy error:', err);
+    res.status(502).json({ error: 'Bad Gateway' });
+  }
 });
 
-// Mount API proxy middleware
 app.use('/api', apiProxy);
 
-// Server-side endpoints
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Rate limiting for server-side endpoints
+// Rate limiting
 import rateLimit from 'express-rate-limit';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
-// Apply rate limiting to server-side endpoints
-app.use('/server', limiter);
+app.use(limiter);
 
-// Server-side components routes
-app.use('/server', express.Router()
-  .get('/metadata', async (req, res) => {
-    try {
-      // Example server-side component logic
-      const metadata = {
-        version: process.env.npm_package_version,
-        nodeEnv: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-      };
-      res.json(metadata);
-    } catch (error) {
-      console.error('Metadata Error:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  })
-);
-
-// Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!' });
+// Remix request handler
+const remixHandler = createRequestHandler({
+  build,
+  mode: process.env.NODE_ENV,
 });
 
-// Handle Remix requests - this should be last
-app.all(
-  '*',
-  createRequestHandler({
-    build,
-    mode: process.env.NODE_ENV,
-  })
-);
+app.all('*', remixHandler);
 
-// Start server
 const server = app.listen(port, () => {
   console.log(`Express server listening on port ${port}`);
+  
   if (process.env.NODE_ENV === 'development') {
     broadcastDevReady(build);
   }
@@ -121,23 +106,62 @@ const server = app.listen(port, () => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
+  console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {
     console.log('HTTP server closed');
+    process.exit(0);
   });
 });
 
-// Type definitions for environment variables
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+// Handle uncaught exceptions and unhandled rejections
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
+// Custom error handler middleware
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Server error:', error);
+  
+  if (res.headersSent) {
+    return next(error);
+  }
+  
+  const statusCode = error.statusCode || error.status || 500;
+  const message = process.env.NODE_ENV === 'production' 
+    ? 'Internal Server Error'
+    : error.message || 'Something went wrong';
+    
+  res.status(statusCode).json({
+    error: message,
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+  });
+});
+
+export default app;
+
+// Types for better TypeScript support
 declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      PORT?: string;
-      NODE_ENV: 'development' | 'production' | 'test';
-      API_TARGET?: string;
-      API_KEY?: string;
-      npm_package_version: string;
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+      };
     }
   }
 }
-
-export default app;
+*/

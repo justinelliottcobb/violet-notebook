@@ -1,16 +1,31 @@
-import { json } from '@remix-run/node';
-import { useLoaderData, Link } from '@remix-run/react';
-import { getArticles } from '~/models/article.server';
-import { requireAuth } from '~/services/auth.server';
-
-export async function loader({ request }: { request: Request }) {
-  await requireAuth(request);
-  const articles = await getArticles();
-  return json({ articles });
-}
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { getArticles, type Article } from '~/models/article.server';
+import { requireAuth } from '~/services/auth.client';
 
 export default function Articles() {
-  const { articles } = useLoaderData<typeof loader>();
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    requireAuth();
+    loadArticles();
+  }, []);
+
+  const loadArticles = async () => {
+    try {
+      const articleData = await getArticles();
+      setArticles(articleData);
+    } catch (error) {
+      console.error('Failed to load articles:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading articles...</div>;
+  }
 
   return (
     <div className="container">

@@ -1,41 +1,41 @@
-import { json, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
-import { createUserSession } from "../services/auth.server";
+import { useState } from 'react';
 import { TextInput, PasswordInput, Button, Paper, Title } from '@mantine/core';
-import { login } from '~/services/auth.server';
+import { login } from '~/services/auth.client';
 import styles from '~/styles/modules/login.module.scss';
 
-
-export async function action({ request }: { request: Request }) {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-
-  const session = await login(email, password);
-  if (!session) {
-    return json({ error: "Invalid credentials" });
-  }
-
-  return session;
-
-  // Old hardcoded login
-  // Add your user validation logic here
-  // This is where you'd typically check against your database
-  // if (email === "admin@example.com" && password === "password") {
-  //   return createUserSession("1", "/");
-  // }
-
-  // return json({ error: "Invalid credentials" });
-}
-
 export default function Login() {
-  const actionData = useActionData<typeof action>();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const success = await login(email, password);
+      if (!success) {
+        setError("Invalid credentials");
+      } else {
+        // Handle successful login - redirect or update app state
+        window.location.href = '/';
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className={styles.loginContainer}>
       <Paper shadow="md" p="xl" className={styles.loginForm}>
         <Title order={2} mb="lg">Login to Violet Notebook</Title>
-        <Form method="post">
+        <form onSubmit={handleSubmit}>
           <TextInput
             name="email"
             label="Email"
@@ -48,13 +48,13 @@ export default function Login() {
             required
             mb="md"
           />
-          {actionData?.error && (
-            <div className={styles.error}>{actionData.error}</div>
+          {error && (
+            <div className={styles.error}>{error}</div>
           )}
-          <Button type="submit" fullWidth>
+          <Button type="submit" fullWidth loading={isLoading}>
             Log in
           </Button>
-        </Form>
+        </form>
       </Paper>
     </div>
   );
